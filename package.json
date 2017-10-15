@@ -1,0 +1,22 @@
+{
+  "name": "angular-abstract-resource",
+  "version": "1.0.0",
+  "description": "Abstract resource class",
+  "main": "index.js",
+  "repository": "https://github.com/FlareMind/angular-abstract-resource.git",
+  "author": "Flare Mind <info@flaremind.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.json"
+  },
+  "private": false,
+  "devDependencies": {
+    "@types/angular": "^1.6.32",
+    "@types/angular-resource": "^1.5.14",
+    "typescript": "^2.5.3"
+  },
+  "dependencies": {
+    "angular": "^1.6.6",
+    "angular-resource": "^1.6.6"
+  }
+}
