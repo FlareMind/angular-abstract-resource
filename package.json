@@ -24,6 +24,7 @@
     "@types/core-js": "^0.9.43",
     "angular": "^1.6.6",
     "angular-resource": "^1.6.6",
-    "core-js": "^2.5.1"
+    "core-js": "^2.5.1",
+    "typescript-observable": "^1.0.14"
   }
 }
