@@ -35,7 +35,7 @@ const DEFAULT_VALUES : IConfig = {
     }
 };
 
-export let AbstractResource = (config : IConfig) => ($resource : ng.resource.IResourceService, $injector : ng.auto.IInjectorService, $q : ng.IQService, $timeout : ng.ITimeoutService) => {
+export let AbstractResource = (config : IConfig) => function($resource : ng.resource.IResourceService, $injector : ng.auto.IInjectorService, $q : ng.IQService, $timeout : ng.ITimeoutService) {
     this.$inject = ['$resource', '$injector', '$q', '$timeout'];
 
     /*
