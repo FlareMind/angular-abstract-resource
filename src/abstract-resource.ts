@@ -25,7 +25,7 @@ const DEFAULT_VALUES : IConfig = {
     customMethods: {},
     stripTrailingSlashes: true,
     customDelete: (object : any, data : any, config : IConfig) => {
-        let id = this[config.primaryKey],
+        let id = object[config.primaryKey],
             index = data.findIndex((item : any) => item[config.primaryKey] === id);
 
         data.splice(index, 1);
@@ -87,6 +87,9 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
         paginationMethods : any = config.pages ? pagination.getMethods() : {};
 
 
+    let primaryKeyDefaultParam : any = {};
+    primaryKeyDefaultParam[config.primaryKey] = '@' + config.primaryKey;
+
 
     /*
      * Define the resource object
@@ -97,7 +100,7 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
         config.url + ':' + config.primaryKey,
 
         // Set default params
-        config.defaultParams,
+        Object.assign(primaryKeyDefaultParam, config.defaultParams),
 
         Object.assign({}, {
                 'update': {
@@ -195,6 +198,7 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
 
             resolve(notifyData);
         }, (error: any) => {
+
             if (config.errorUpdate) {
                 $timeout(updateResource, config.errorUpdateTime);
             }
@@ -225,7 +229,7 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
             config.customCreate(object, data, config);
         });
 
-        this.get = (params : any) : any => Resource.get(params);
+        this.get = (params : any) : any => Resource.get(params).$promise;
 
         this.save = () : void => {
             data.forEach((item : any) => {
