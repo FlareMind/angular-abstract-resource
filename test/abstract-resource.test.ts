@@ -307,7 +307,7 @@ describe('AbstractResource', () => {
         it('should call ERROR', done => {
 
             StandardService.on('error', (event : any) => {
-                console.log(event);
+                expect(event).to.haveOwnProperty('status');
                 done();
             });
 
