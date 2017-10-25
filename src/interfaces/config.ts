@@ -3,7 +3,6 @@ export interface IConfig {
     url : string;
     primaryKey?: string;
     defaultParams?: any;
-    trailingUrlSlash?: boolean;
     extension?: Function;
     single?: boolean;
     update?: boolean;

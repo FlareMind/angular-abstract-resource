@@ -13,7 +13,6 @@ const DEFAULT_VALUES : IConfig = {
     url: '',
     primaryKey: 'id',
     defaultParams: {},
-    trailingUrlSlash: true,
     extension: () => {},
     single: false,
     update: false,
@@ -97,7 +96,7 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
     let Resource = $resource(
 
         // Specify the url with primary key as a parameter
-        config.url + ':' + config.primaryKey,
+        config.url + ':' + config.primaryKey + '/',
 
         // Set default params
         Object.assign(primaryKeyDefaultParam, config.defaultParams),

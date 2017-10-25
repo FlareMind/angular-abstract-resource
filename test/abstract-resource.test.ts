@@ -321,6 +321,34 @@ describe('AbstractResource', () => {
     });
 
     describe('Custom behaviour', () => {
+        it('should allow a different primary key');
 
+        it('should have possibility for default params');
+
+        it('should have possibility for extensions');
+
+        it('should work with single items');
+
+        it('should have possibility for automatic updates');
+
+        it('should have possibility for incremental updates');
+
+        it('should be possible to update on errors');
+
+        it('should be possible to strip trailing slashes in the url');
+
+        it('should be possible to set a custom create');
+
+        it('should be possible to set a custom delete');
+
+        describe('Pages', () => {
+            it('should record page information');
+
+            it('should send page information');
+
+            it('should jump to next page');
+
+            it('should jump to previous page');
+        });
     });
 });
