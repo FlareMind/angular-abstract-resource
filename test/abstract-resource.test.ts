@@ -2,14 +2,17 @@ import {expect} from 'chai'
 import * as angular from 'angular'
 import 'angular-mocks'
 import {MockApp} from "./mock/mock-app";
+import {AbstractResource} from "../src/abstract-resource";
 
 describe('AbstractResource', () => {
     let $httpBackend : ng.IHttpBackendService,
+        $injector : ng.auto.IInjectorService,
         StandardService : any;
 
     beforeEach(angular.mock.module(MockApp));
 
-    beforeEach(angular.mock.inject(($injector : ng.auto.IInjectorService, _StandardService_ : any) => {
+    beforeEach(angular.mock.inject((_$injector_ : ng.auto.IInjectorService, _StandardService_ : any) => {
+        $injector = _$injector_;
         $httpBackend = $injector.get('$httpBackend');
         StandardService = _StandardService_;
     }));
@@ -107,19 +110,36 @@ describe('AbstractResource', () => {
 
         // Make sure to take care of the standard list command
         beforeEach(() => {
-            $httpBackend.expectGET('/resource/standard').respond([1]);
+            $httpBackend.expectGET('/resource/standard').respond([{
+                id: 1
+            }]);
             $httpBackend.flush();
         });
 
-        it('should get data', done => {
+        it('should get data with primary key', done => {
             $httpBackend.whenGET('/resource/standard/1').respond({
-                test: 1
+                id: 1,
+                foo: 'bar'
             });
 
             StandardService.get({
                 id: 1
-            }).then((data : any) => {
-                expect(data.test).to.equal(1);
+            }).then((object : any) => {
+                expect(object.foo).to.equal('bar');
+                done();
+            });
+
+            $httpBackend.flush();
+        });
+
+        it('should get data from loaded item', done => {
+            $httpBackend.whenGET('/resource/standard/1').respond({
+                id: 1,
+                foo: 'bar'
+            });
+
+            StandardService.list()[0].$get().then((object : any) => {
+                expect(object.foo).to.equal('bar');
                 done();
             });
 
@@ -321,7 +341,36 @@ describe('AbstractResource', () => {
     });
 
     describe('Custom behaviour', () => {
-        it('should allow a different primary key');
+
+        it('should allow a different primary key', done => {
+
+            let url = '/resource/standard';
+
+            $httpBackend.whenGET(url).respond([{
+                foo: 1
+            }]);
+
+            let abstractResource = $injector.invoke(AbstractResource({
+                url: '/resource/standard',
+                primaryKey: 'foo'
+            }), {});
+
+            $httpBackend.flush();
+
+            $httpBackend.expectGET(url + '/1').respond({
+                foo: 1,
+                test: 'bar'
+            });
+
+            abstractResource.list()[0].$get().then((object : any) => {
+                expect(object.test).to.equal('bar');
+                done();
+            });
+
+            $httpBackend.flush();
+
+
+        });
 
         it('should have possibility for default params');
 
