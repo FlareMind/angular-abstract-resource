@@ -158,6 +158,7 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
             params.skip = data.map((item : any) => item[config.primaryKey]).join(',');
         }
 
+
         Resource.query(params).$promise.then((response : any) => {
 
             isLoaded = true;

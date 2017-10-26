@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import * as angular from 'angular'
 import 'angular-mocks'
-import {MockApp} from "./mock/mock-app";
+import {MockApp, DEFAULT_URL} from "./mock/mock-app";
 import {AbstractResource} from "../src/abstract-resource";
 
 describe('AbstractResource', () => {
@@ -26,7 +26,7 @@ describe('AbstractResource', () => {
             }];
 
             beforeEach(() => {
-                $httpBackend.expectGET('/resource/standard').respond(testData);
+                $httpBackend.whenGET(DEFAULT_URL).respond(testData);
 
                 $httpBackend.flush();
             });
@@ -56,7 +56,7 @@ describe('AbstractResource', () => {
 
         describe('Empty data load', () => {
             beforeEach(() => {
-                $httpBackend.expectGET('/resource/standard').respond([]);
+                $httpBackend.whenGET(DEFAULT_URL).respond([]);
 
                 $httpBackend.flush();
             });
@@ -78,12 +78,12 @@ describe('AbstractResource', () => {
     describe('Reload', () => {
 
         beforeEach(() => {
-            $httpBackend.expectGET('/resource/standard').respond([1]);
+            $httpBackend.expectGET(DEFAULT_URL).respond([1]);
             $httpBackend.flush();
         });
 
         it('should reload the data', () => {
-            $httpBackend.whenGET('/resource/standard').respond([2]);
+            $httpBackend.whenGET(DEFAULT_URL).respond([2]);
 
             // Reload the data
             StandardService.reload();
@@ -110,14 +110,14 @@ describe('AbstractResource', () => {
 
         // Make sure to take care of the standard list command
         beforeEach(() => {
-            $httpBackend.expectGET('/resource/standard').respond([{
+            $httpBackend.whenGET(DEFAULT_URL).respond([{
                 id: 1
             }]);
             $httpBackend.flush();
         });
 
         it('should get data with primary key', done => {
-            $httpBackend.whenGET('/resource/standard/1').respond({
+            $httpBackend.whenGET(DEFAULT_URL + '/1').respond({
                 id: 1,
                 foo: 'bar'
             });
@@ -133,7 +133,7 @@ describe('AbstractResource', () => {
         });
 
         it('should get data from loaded item', done => {
-            $httpBackend.whenGET('/resource/standard/1').respond({
+            $httpBackend.whenGET(DEFAULT_URL + '/1').respond({
                 id: 1,
                 foo: 'bar'
             });
@@ -151,7 +151,7 @@ describe('AbstractResource', () => {
 
         // Make sure to take care of the standard list command
         beforeEach(() => {
-            $httpBackend.expectGET('/resource/standard').respond([{
+            $httpBackend.whenGET(DEFAULT_URL).respond([{
                 id: 1
             }]);
             $httpBackend.flush();
@@ -166,7 +166,7 @@ describe('AbstractResource', () => {
                 };
 
             // HTTP backend response of create call
-            $httpBackend.whenPOST('/resource/standard', (data : any) => data === JSON.stringify(createData))
+            $httpBackend.whenPOST(DEFAULT_URL, (data : any) => data === JSON.stringify(createData))
 
                 .respond(201, reponseData);
 
@@ -191,24 +191,24 @@ describe('AbstractResource', () => {
 
         // Make sure to take care of the standard list command
         beforeEach(() => {
-            $httpBackend.expectGET('/resource/standard').respond([{
-                id: 112345
+            $httpBackend.whenGET(DEFAULT_URL).respond([{
+                id: 11235
             }, {
-                id: 112346
+                id: 11236
             }]);
             $httpBackend.flush();
         });
 
         it('should remove an item', done => {
 
-            $httpBackend.whenDELETE('/resource/standard/112345')
+            $httpBackend.whenDELETE(DEFAULT_URL + '/11235')
 
                 .respond(204);
 
             StandardService.list()[0].$delete().then((object : any) => {
 
                 // Make sure that the item is removed
-                expect(object.id).to.equal(112345);
+                expect(object.id).to.equal(11235);
                 expect(StandardService.list().length).to.equal(1);
                 done();
             });
@@ -221,7 +221,7 @@ describe('AbstractResource', () => {
 
         // Make sure to take care of the standard list command
         beforeEach(() => {
-            $httpBackend.expectGET('/resource/standard').respond([{
+            $httpBackend.whenGET(DEFAULT_URL).respond([{
                 id: 1234,
                 foo: 'bar'
             }]);
@@ -238,7 +238,7 @@ describe('AbstractResource', () => {
             let itemCopy = angular.copy(item);
 
             // HTTP backend response of update call
-            $httpBackend.whenPUT('/resource/standard/1234', (data : any) => data === JSON.stringify(itemCopy))
+            $httpBackend.whenPUT(DEFAULT_URL + '/1234', (data : any) => data === JSON.stringify(itemCopy))
                 .respond(itemCopy);
 
             item.$update().then((object : any) => {
@@ -256,7 +256,7 @@ describe('AbstractResource', () => {
 
         // Make sure to take care of the standard list command
         beforeEach(() => {
-            $httpBackend.expectGET('/resource/standard').respond([{
+            $httpBackend.expectGET(DEFAULT_URL).respond([{
                 id: 1,
                 foo: 'bar'
             }]);
@@ -281,7 +281,7 @@ describe('AbstractResource', () => {
                 done();
             });
 
-            $httpBackend.whenGET('/resource/standard').respond([2]);
+            $httpBackend.whenGET(DEFAULT_URL).respond([2]);
 
             // Reload the data
             StandardService.reload();
@@ -303,7 +303,7 @@ describe('AbstractResource', () => {
             });
 
             // HTTP backend response of create call
-            $httpBackend.whenPOST('/resource/standard').respond(201, reponseData);
+            $httpBackend.whenPOST(DEFAULT_URL).respond(201, reponseData);
 
             StandardService.create(createData);
 
@@ -312,7 +312,7 @@ describe('AbstractResource', () => {
 
         it('should call DELETE', done => {
 
-            $httpBackend.whenDELETE('/resource/standard/1').respond(204);
+            $httpBackend.whenDELETE(DEFAULT_URL + '/1').respond(204);
 
             StandardService.on('delete', (event : any) => {
                 expect(event.object.id).to.equal(1);
@@ -331,73 +331,12 @@ describe('AbstractResource', () => {
                 done();
             });
 
-            $httpBackend.whenGET('/resource/standard').respond(401);
+            $httpBackend.whenGET(DEFAULT_URL).respond(401);
 
             // Reload the data
             StandardService.reload().catch(() => {});
 
             $httpBackend.flush();
-        });
-    });
-
-    describe('Custom behaviour', () => {
-
-        it('should allow a different primary key', done => {
-
-            let url = '/resource/standard';
-
-            $httpBackend.whenGET(url).respond([{
-                foo: 1
-            }]);
-
-            let abstractResource = $injector.invoke(AbstractResource({
-                url: '/resource/standard',
-                primaryKey: 'foo'
-            }), {});
-
-            $httpBackend.flush();
-
-            $httpBackend.expectGET(url + '/1').respond({
-                foo: 1,
-                test: 'bar'
-            });
-
-            abstractResource.list()[0].$get().then((object : any) => {
-                expect(object.test).to.equal('bar');
-                done();
-            });
-
-            $httpBackend.flush();
-
-
-        });
-
-        it('should have possibility for default params');
-
-        it('should have possibility for extensions');
-
-        it('should work with single items');
-
-        it('should have possibility for automatic updates');
-
-        it('should have possibility for incremental updates');
-
-        it('should be possible to update on errors');
-
-        it('should be possible to strip trailing slashes in the url');
-
-        it('should be possible to set a custom create');
-
-        it('should be possible to set a custom delete');
-
-        describe('Pages', () => {
-            it('should record page information');
-
-            it('should send page information');
-
-            it('should jump to next page');
-
-            it('should jump to previous page');
         });
     });
 });
