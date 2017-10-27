@@ -98,11 +98,30 @@ describe('AbstractResource Custom', () => {
             expect(abstractResource.list().foo).to.equal('bar');
         });
 
-        it('should have possibility for automatic updates');
+        it('should have possibility for incremental updates', () => {
+            $httpBackend.expectGET(DEFAULT_URL + '?skip=').respond([{
+                id: 1
+            }, {
+                id: 2
+            }]);
 
-        it('should have possibility for incremental updates');
+            let abstractResource = $injector.invoke(AbstractResource({
+                url: DEFAULT_URL,
+                incremental: true
+            }), {});
 
-        it('should be possible to update on errors');
+            $httpBackend.flush();
+
+            $httpBackend.expectGET(DEFAULT_URL + '?skip=1,2').respond([{
+                id: 3
+            }]);
+
+            abstractResource.reload();
+
+            $httpBackend.flush();
+
+            expect(abstractResource.list().length).to.equal(3);
+        });
 
         describe('Trailing slashes', () => {
 
@@ -202,13 +221,144 @@ describe('AbstractResource Custom', () => {
 
         describe('Pages', () => {
 
-            it('should record page information');
+            it('should record page information', () => {
+                $httpBackend.expectGET(DEFAULT_URL + '?page=1').respond({
+                    next: DEFAULT_URL + "?page=2",
+                    previous: "",
+                    results: [{
+                        id: 1
+                    }]
+                });
 
-            it('should send page information');
+                let abstractResource = $injector.invoke(AbstractResource({
+                    url: DEFAULT_URL,
+                    pages: true
+                }), {});
 
-            it('should jump to next page');
+                $httpBackend.flush();
 
-            it('should jump to previous page');
+                expect(abstractResource.getPage()).to.equal(1);
+                expect(abstractResource.hasNext()).to.be.true;
+                expect(abstractResource.getNext()).to.equal(2);
+                expect(abstractResource.hasPrevious()).to.be.false;
+            });
+
+            it('should jump to next page', done => {
+                $httpBackend.expectGET(DEFAULT_URL + '?page=1').respond({
+                    next: DEFAULT_URL + "?page=2",
+                    previous: "",
+                    results: [{
+                        id: 1
+                    }]
+                });
+
+                let abstractResource = $injector.invoke(AbstractResource({
+                    url: DEFAULT_URL,
+                    pages: true
+                }), {});
+
+                $httpBackend.flush();
+
+                $httpBackend.expectGET(DEFAULT_URL + '?page=2').respond({
+                    next: DEFAULT_URL + "?page=3",
+                    previous: DEFAULT_URL + "?page=1",
+                    results: [{
+                        id: 1
+                    }]
+                });
+
+                abstractResource.nextPage().then((object : any) => {
+                    expect(object).to.haveOwnProperty('page');
+                    expect(object.page).to.be.equal(2);
+                    expect(object).to.haveOwnProperty('data');
+                    expect(object).to.haveOwnProperty('response');
+                    done();
+                });
+
+                $httpBackend.flush();
+            });
+
+            it('should jump to previous page', done => {
+                $httpBackend.expectGET(DEFAULT_URL + '?page=1').respond({
+                    next: DEFAULT_URL + "?page=2",
+                    previous: "",
+                    results: [{
+                        id: 1
+                    }]
+                });
+
+                let abstractResource = $injector.invoke(AbstractResource({
+                    url: DEFAULT_URL,
+                    pages: true
+                }), {});
+
+                $httpBackend.flush();
+
+                $httpBackend.expectGET(DEFAULT_URL + '?page=2').respond({
+                    next: DEFAULT_URL + "?page=3",
+                    previous: DEFAULT_URL + "?page=1",
+                    results: [{
+                        id: 1
+                    }]
+                });
+
+                abstractResource.nextPage();
+
+                $httpBackend.flush();
+
+                $httpBackend.expectGET(DEFAULT_URL + '?page=1').respond({
+                    next: DEFAULT_URL + "?page=2",
+                    previous: "",
+                    results: [{
+                        id: 1
+                    }]
+                });
+
+                abstractResource.previousPage().then((object : any) => {
+                    expect(object).to.haveOwnProperty('page');
+                    expect(object.page).to.be.equal(1);
+                    expect(object).to.haveOwnProperty('data');
+                    expect(object).to.haveOwnProperty('response');
+                    done();
+                });
+
+                $httpBackend.flush();
+            });
+
+            it('should jump to specified page', done => {
+                $httpBackend.expectGET(DEFAULT_URL + '?page=1').respond({
+                    next: DEFAULT_URL + "?page=2",
+                    previous: "",
+                    results: [{
+                        id: 1
+                    }]
+                });
+
+                let abstractResource = $injector.invoke(AbstractResource({
+                    url: DEFAULT_URL,
+                    pages: true
+                }), {});
+
+                $httpBackend.flush();
+
+                $httpBackend.expectGET(DEFAULT_URL + '?page=10').respond({
+                    next: DEFAULT_URL + "?page=11",
+                    previous: DEFAULT_URL + "?page=9",
+                    results: [{
+                        id: 1
+                    }]
+                });
+
+                abstractResource.loadPage(10).then((object : any) => {
+                    expect(object).to.haveOwnProperty('page');
+                    expect(object.page).to.be.equal(10);
+                    expect(object).to.haveOwnProperty('data');
+                    expect(object).to.haveOwnProperty('response');
+                    done();
+                });
+
+                $httpBackend.flush();
+            });
         });
     });
 });

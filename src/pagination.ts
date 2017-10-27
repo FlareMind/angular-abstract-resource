@@ -23,10 +23,9 @@ export class Pagination {
                      * Angular expects a list, but backend sends page info also. Extract page info and then
                      * return the list.
                      */
-                    let jsonData = JSON.parse(data);
-                    this.settings.nextPage = Pagination.getPageNumber(jsonData.next);
-                    this.settings.previousPage = Pagination.getPageNumber(jsonData.previous);
-                    return jsonData.results;
+                    this.settings.nextPage = Pagination.getPageNumber(data.next);
+                    this.settings.previousPage = Pagination.getPageNumber(data.previous);
+                    return data.results;
                 }
             }
         }
@@ -70,11 +69,20 @@ export class Pagination {
         return this.settings.page;
     }
 
+    setPage(page : number) : boolean {
+        if (page > 0) {
+            this.settings.page = page;
+            return true;
+        }
+
+        return false;
+    }
+
     private static getPageNumber(link : string) : number | null {
         if (link === null) {
             return null;
         }
 
-        return Number((/page=([\d]+)/.exec(link) || [1])[1]) || 1;
+        return Number((/page=([\d]+)/.exec(link) || [null])[1]) || null;
     }
 }

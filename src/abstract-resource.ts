@@ -247,12 +247,25 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
     this.reload = () : any => updateResource(true);
 
     if (config.pages) {
+
+        this.getPage = () : number => pagination.getPage();
+
+        this.hasNext = () : boolean => pagination.hasNext();
+
+        this.hasPrevious = () : boolean => pagination.hasPrevious();
+
+        this.getNext = () : number => pagination.getNext();
+
+        this.getPrevious = () : number => pagination.getPrevious();
+
         this.nextPage = () : any => {
             if (pagination.nextPage()) {
                 return updateResource(true);
             }
 
-            return false;
+            return $q.reject({
+                message: 'No next page'
+            });
         };
 
         this.previousPage = () : any => {
@@ -260,8 +273,20 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
                 return updateResource(true);
             }
 
-            return false;
+            return $q.reject({
+                message: 'No previous page'
+            });
         };
+
+        this.loadPage = (page : number) : any => {
+            if (pagination.setPage(page)) {
+                return updateResource(true);
+            }
+
+            return $q.reject({
+                message: 'Illegal page number'
+            });
+        }
     }
 
     return Object.assign(this, $injector.invoke(config.extension, this));
