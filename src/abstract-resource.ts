@@ -200,7 +200,9 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
         }, (error: any) => {
 
             if (config.errorUpdate) {
-                $timeout(updateResource, config.errorUpdateTime);
+                $timeout(() => {
+                    updateResource(false).then(() => {}, () => {});
+                }, config.errorUpdateTime);
             }
 
             observable.notify(Event.ERROR, error);
