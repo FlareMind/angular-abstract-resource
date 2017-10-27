@@ -209,7 +209,7 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
         });
     });
 
-    updateResource(false);
+    updateResource(false).then(() => {}, () => {});
 
     /*
      * List all data
