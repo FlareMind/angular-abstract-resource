@@ -5,8 +5,11 @@ This is an abstract resource class for AngularJs that makes resource handling ea
 
 ``` javascript
 import {AbstractResource} from 'angular-abstract-resource'
+import ngResource from 'angular-resource'
 
-angular.module('someApp', [])
+angular.module('someApp', [
+    ngResource
+])
     .service('SomeResource', AbstractResource({
         url: '/path/to/resources'
     }))

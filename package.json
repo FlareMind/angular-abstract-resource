@@ -1,6 +1,6 @@
 {
   "name": "angular-abstract-resource",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Abstract resource class",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
