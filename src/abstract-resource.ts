@@ -193,7 +193,9 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
 
             // Update if enabled
             if (config.update && !reload) {
-                $timeout(updateResource, config.updateTime);
+                $timeout(() => {
+                    updateResource(false).then(() => {}, () => {});
+                }, config.updateTime);
             }
 
             resolve(notifyData);
