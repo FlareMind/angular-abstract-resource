@@ -137,7 +137,7 @@ export let AbstractResource = (config : IConfig) => function($resource : ng.reso
     /*
      * Create an object to store the data
      */
-    let data : any = config.single ? {} : [],
+    let data : any = config.single ? Object.create(new Resource()) : [],
         hash : number = hashCode(data),
         isLoaded : boolean = false;
 

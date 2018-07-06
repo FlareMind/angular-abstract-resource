@@ -96,6 +96,9 @@ describe('AbstractResource Custom', () => {
 
             expect(abstractResource.list()).to.haveOwnProperty('foo');
             expect(abstractResource.list().foo).to.equal('bar');
+
+            // Check that save works for single items
+            expect(abstractResource.list().$save).to.not.be.undefined;
         });
 
         it('should have possibility for incremental updates', () => {
